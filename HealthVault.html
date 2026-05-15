@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthVault - Personal Health Record Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c6bac;
+            --primary-dark: #1a4c7e;
+            --secondary: #4fb0c6;
+            --accent: #4fb477;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --success: #2ecc71;
+            --info: #3498db;
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #34495e;
+            line-height: 1.6;
+        }
+        .navbar {
+            background: var(--primary);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            color: white !important;
+            display: flex;
+            align-items: center;
+        }
+        .navbar-brand i {
+            margin-right: 10px;
+            font-size: 1.5rem;
+        }
+        .nav-link {
+            color: rgba(255, 255, 255, 0.85) !important;
+            font-weight: 500;
+            padding: 10px 15px !important;
+            border-radius: 6px;
+            transition: var(--transition);
+        }
+        .nav-link:hover, .nav-link.active {
+            color: white !important;
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .card {
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 25px;
+            border: none;
+            transition: var(--transition);
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+        .card-header {
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            color: white;
+            border-bottom: none;
+            font-weight: 600;
+            padding: 18px 25px;
+            border-radius: 12px 12px 0 0 !important;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .card-header i {
+            margin-right: 10px;
+        }
+        .btn {
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn i {
+            margin-right: 8px;
+        }
+        .btn-primary {
+            background: var(--primary);
+            border: none;
+        }
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(44, 107, 172, 0.4);
+        }
+        .btn-success {
+            background: var(--accent);
+            border: none;
+        }
+        .btn-success:hover {
+            background: #3d9b61;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 180, 119, 0.4);
+        }
+        .btn-lg {
+            padding: 16px 32px;
+            font-size: 1.1rem;
+        }
+        .feature-icon {
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-right: 15px;
+        }
+        .high-contrast {
+            background-color: #000 !important;
+            color: #fff !important;
+        }
+        .high-contrast .card {
+            background-color: #222 !important;
+            color: white !important;
+        }
+        .high-contrast .card-header {
+            background: linear-gradient(to right, #000, #333) !important;
+            color: white !important;
+        }
+        .large-text {
+            font-size: 1.2rem;
+        }
+        .large-buttons .btn {
+            padding: 16px 32px;
+            font-size: 1.2rem;
+        }
+        .accessibility-controls {
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 25px;
+        }
+        .health-record-item {
+            border-left: 4px solid var(--primary);
+            padding-left: 20px;
+            margin-bottom: 20px;
+            transition: var(--transition);
+        }
+        .health-record-item:hover {
+            transform: translateX(5px);
+        }
+        .reminder-card {
+            background: linear-gradient(to right, #e8f4fd, #d1e9ff);
+            border-left: 4px solid var(--primary);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+        .consent-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        .stat-card {
+            text-align: center;
+            padding: 25px 15px;
+            border-radius: 12px;
+            background: white;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-card h3 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0;
+            color: var(--primary);
+        }
+        .login-container {
+            max-width: 450px;
+            margin: 80px auto;
+            padding: 40px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+        }
+        .form-control, .form-select {
+            padding: 14px;
+            border-radius: 8px;
+            border: 2px solid #eaeaea;
+            transition: var(--transition);
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(44, 107, 172, 0.25);
+        }
+        .modal-content {
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 40px 0 20px;
+            margin-top: 60px;
+        }
+        .section-title {
+            position: relative;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 70px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 10px;
+        }
+        @media (max-width: 768px) {
+            .btn {
+                padding: 10px 20px;
+            }
+            .btn-lg {
+                padding: 14px 28px;
+            }
+            .main-container {
+                padding: 10px;
+                max-width: 100%;
+            }
+            .section-title {
+                font-size: 1.3rem;
+            }
+            .stat-card h3 {
+                font-size: 1.4rem;
+            }
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+                padding: 14px 12px;
+            }
+            .accessibility-controls {
+                padding: 12px;
+            }
+        }
+        @media (max-width: 576px) {
+            .d-flex.justify-content-between.align-items-center.mb-5 {
+                flex-direction: column;
+                align-items: stretch !important;
+                gap: 12px;
+            }
+            .d-flex.justify-content-between.align-items-center.mb-5 > div:last-child {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+            footer .row {
+                text-align: center;
+            }
+            footer .text-md-end {
+                text-align: center !important;
+            }
+            .modal-dialog {
+                max-width: 98vw;
+                margin: 0.5rem auto;
+            }
+            .row.mb-5 {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                gap: 12px;
+            }
+            .row.mb-5 > [class^="col-"] {
+                min-width: 220px;
+                flex: 0 0 auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-heartbeat"></i>HealthVault
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#"><i class="fas fa-home me-1"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-file-medical me-1"></i> Records</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-calendar-check me-1"></i> Appointments</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-pills me-1"></i> Medications</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-shield-alt me-1"></i> Privacy</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <button class="btn btn-outline-light me-2" id="accessibilityToggle">
+                        <i class="fas fa-universal-access"></i>
+                    </button>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown">
+                            
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <button onclick="Logout()" class="dropdown-item"><i class="fas fa-sign-out-alt me-2"></i>Logout</button>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Accessibility Controls -->
+    <div class="container mt-4 d-none" id="accessibilityControls">
+        <div class="accessibility-controls">
+            <h5 class="mb-4"><i class="fas fa-universal-access me-2" style="color:#2ecc71"></i>Accessibility Options</h5>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <button class="btn btn-primary w-100" id="contrastToggle">
+                        <i class="fas fa-adjust me-2"></i>High Contrast Mode
+                    </button>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <button class="btn btn-primary w-100" id="textSizeToggle">
+                        <i class="fas fa-text-height me-2"></i>Large Text
+                    </button>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <button class="btn btn-primary w-100" id="largeButtonsToggle">
+                        <i class="fas fa-hand-pointer me-2"></i>Large Buttons
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Dashboard Header -->
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h2 class="section-title">Health Dashboard</h2>
+                <p id="startMsg" class="text-muted" style="color:#10ae50"></p>
+            </div>
+            <div>
+                <button class="btn btn-primary me-2"><i class="fas fa-download me-1"></i> Export Records</button>
+                <button class="btn btn-outline-primary"><i class="fas fa-print me-1"></i> Print</button>
+            </div>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="row mb-5">
+            <div class="col-md-3 col-6 mb-4">
+                <div class="stat-card">
+                    <i class="fas fa-heartbeat feature-icon"></i>
+                    <h3 id="bpm"></h3>
+                    <p class="text-muted">BPM</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <div class="stat-card">
+                    <i class="fas fa-tint feature-icon"></i>
+                    <h3 id="bp"></h3>
+                    <p class="text-muted">Blood Pressure</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <div class="stat-card">
+                    <i class="fas fa-stethoscope feature-icon"></i>
+                    <h3 id="bmi"></h3>
+                    <p class="text-muted">BMI</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <div class="stat-card">
+                    <i class="fas fa-weight feature-icon"></i>
+                    <h3 id="weight"></h3>
+                    <p class="text-muted">Weight</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Recent Records -->
+            <div class="col-lg-8 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <span><i class="fas fa-file-medical"></i> Recent Health Records</span>
+                        <button class="btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#addRecordModal">
+                            <i class="fas fa-plus me-1"></i> Add New
+                        </button>
+                    </div>
+                    <div class="card-body" id="recentRecords">
+                        <div class="text-center text-muted" id="recordsLoading">Loading records...</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Reminders and Actions -->
+            <div class="col-lg-4 mb-4">
+                <!-- Reminders -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <span><i class="fas fa-bell"></i> Reminders</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="reminder-card">
+                            <h6><i class="fas fa-pills text-primary me-2"></i> Medication</h6>
+                            <p class="mb-1">Take Metformin (500mg) with breakfast</p>
+                            <small class="text-muted">Today at 8:00 AM</small>
+                        </div>
+                        <div class="reminder-card">
+                            <h6><i class="fas fa-syringe text-primary me-2"></i> Vaccination</h6>
+                            <p class="mb-1">Flu shot due this season</p>
+                            <small class="text-muted">Before October 31, 2025</small>
+                        </div>
+                        <div class="reminder-card">
+                            <h6><i class="fas fa-stethoscope text-primary me-2"></i> Appointment</h6>
+                            <p class="mb-1">Dr. Das - Cardiology follow-up</p>
+                            <small class="text-muted">Tomorrow at 2:30 PM</small>
+                        </div>
+                        <button class="btn btn-outline-primary w-100 mt-2">
+                            <i class="fas fa-plus me-1"></i> Add Reminder
+                        </button>
+                    </div>
+                </div>
+                <!-- Quick Actions -->
+                <div class="card">
+                    <div class="card-header">
+                        <span><i class="fas fa-bolt"></i> Quick Actions</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary">
+                                <i class="fas fa-file-medical me-1"></i> Add Health Record
+                            </button>
+                            <button class="btn btn-success">
+                                <i class="fas fa-calendar-plus me-1"></i> Schedule Appointment
+                            </button>
+                            <button class="btn btn-info">
+                                <i class="fas fa-prescription me-1"></i> Request Prescription
+                            </button>
+                            <button class="btn btn-warning">
+                                <i class="fas fa-shield-alt me-1"></i> Privacy Settings
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Health Categories -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <h3 class="section-title">Health Records</h3>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-allergies feature-icon"></i>
+                        <h5>Allergies</h5>
+                        <p class="text-muted">2 active allergies</p>
+                        <button class="btn btn-sm btn-outline-primary">Manage</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-heartbeat feature-icon"></i>
+                        <h5>Vitals</h5>
+                        <p class="text-muted">Last updated today</p>
+                        <button class="btn btn-sm btn-outline-primary">View History</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-pills feature-icon"></i>
+                        <h5>Medications</h5>
+                        <p class="text-muted">1 active prescription</p>
+                        <button class="btn btn-sm btn-outline-primary">View All</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="fas fa-syringe feature-icon"></i>
+                        <h5>Vaccinations</h5>
+                        <p class="text-muted">Up to date</p>
+                        <button class="btn btn-sm btn-outline-primary">View Records</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Access Control -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <span><i class="fas fa-shield-alt"></i> Access Control</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-4">Manage who can view your health records. You have full control over your data privacy.</p>
+                        <div class="consent-toggle">
+                            <div>
+                                <h6 class="mb-0">Dr. Shafali</h6>
+                                <small class="text-muted">Primary Care Physician</small>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="doctorAccess" checked>
+                                <label class="form-check-label" for="doctorAccess">Full Access</label>
+                            </div>
+                        </div>
+                        <div class="consent-toggle">
+                            <div>
+                                <h6 class="mb-0">Dr. Robin sharma</h6>
+                                <small class="text-muted">Allergist</small>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="allergistAccess">
+                                <label class="form-check-label" for="allergistAccess">Limited Access</label>
+                            </div>
+                        </div>
+                        <div class="consent-toggle">
+                            <div>
+                                <h6 class="mb-0">Shalini</h6>
+                                <small class="text-muted">Emergency Contact (Spouse)</small>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="emergencyAccess">
+                                <label class="form-check-label" for="emergencyAccess">Emergency Only</label>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline-primary mt-3">
+                            <i class="fas fa-plus me-1"></i> Add New Contact
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Record Modal -->
+    <div class="modal fade" id="addRecordModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Health Record</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addRecordForm">
+                        <div class="mb-3">
+                            <label for="recordType" class="form-label">Record Type</label>
+                            <select class="form-select" id="recordType">
+                                <option value="">Select record type</option>
+                                <option value="allergy">Allergy</option>
+                                <option value="vital">Vital Sign</option>
+                                <option value="treatment">Treatment</option>
+                                <option value="vaccination">Vaccination</option>
+                                <option value="appointment">Appointment</option>
+                                <option value="medication">Medication</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="recordDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="recordDescription" rows="3" placeholder="Enter details about this record"></textarea>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="recordDate" class="form-label">Date</label>
+                                <input type="date" class="form-control" id="recordDate">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="recordStatus" class="form-label">Status</label>
+                                <select class="form-select" id="recordStatus">
+                                    <option value="active">Active</option>
+                                    <option value="resolved">Resolved</option>
+                                    <option value="chronic">Chronic</option>
+                                    <option value="monitoring">Monitoring</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="recordNotes" class="form-label">Additional Notes</label>
+                            <textarea class="form-control" id="recordNotes" rows="2" placeholder="Any additional information"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="recordFile" class="form-label">Upload Document (Optional)</label>
+                            <input class="form-control" type="file" id="recordFile">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveRecordBtn">Save Record</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>HealthVault</h5>
+                    <p class="text-light">Your personal health management platform</p>
+                    <p class="text-light"><small>Compliant with HIPAA and healthcare data regulations</small></p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="text-light">© 2025 HealthVault. All rights reserved.</p>
+                    <p class="text-light"><small>Secure • Private • Accessible</small></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ...existing code... -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // Accessibility features
+        const accessibilityToggle = document.getElementById('accessibilityToggle');
+        const accessibilityControls = document.getElementById('accessibilityControls');
+        const contrastToggle = document.getElementById('contrastToggle');
+        const textSizeToggle = document.getElementById('textSizeToggle');
+        const largeButtonsToggle = document.getElementById('largeButtonsToggle');
+        
+        accessibilityToggle.addEventListener('click', function() {
+            accessibilityControls.classList.toggle('d-none');
+        });
+        contrastToggle.addEventListener('click', function() {
+            document.body.classList.toggle('high-contrast');
+        });
+        textSizeToggle.addEventListener('click', function() {
+            document.body.classList.toggle('large-text');
+        });
+        largeButtonsToggle.addEventListener('click', function() {
+            document.body.classList.toggle('large-buttons');
+        });
+
+        // --- Backend Integration Starts Here ---
+
+        // 0. get user data from login page
+
+        function getUserData() {
+            try {
+                const raw = localStorage.getItem('userData');
+                return raw ? JSON.parse(raw) : {};
+            } catch { return {}; }
+        }
+        let { bmi, bp, bpm, username, weight } = getUserData();
+
+        // Refresh user stats from backend if available
+
+        async function hydrateUser() {
+            try {
+                if (!username) return; // need username saved at login
+                const profile = await api(`/me?username=${encodeURIComponent(username)}`);
+                const stats = profile.user?.stats || {};
+                ({ bpm, bp, bmi, weight } = stats);
+                const stored = getUserData();
+                localStorage.setItem('userData', JSON.stringify({ ...stored, ...stats }));
+                loadUserStats();
+            } catch (e) {
+                // ignore
+            }
+        }
+        hydrateUser();
+        // 0.5 Load user stats
+        function loadUserStats() {
+            document.getElementById('userDropdown').innerHTML = `<i class="fas fa-user-circle me-1"></i> ${username || 'User'}`;
+            document.getElementById('startMsg').textContent = `Welcome back, ${username || 'User'}. Here's your health overview for today.`;
+            document.getElementById('bmi').textContent = bmi || 'N/A';
+            document.getElementById('bp').textContent = bp || 'N/A';
+            document.getElementById('bpm').textContent = bpm || 'N/A';
+            document.getElementById('weight').textContent = weight ? weight + ' kg' : 'N/A';
+        }
+        loadUserStats();
+
+
+        const API_BASE = 'http://localhost:5000';
+        const token = localStorage.getItem('authToken');
+
+        async function api(path, method='GET', body) {
+            const res = await fetch(API_BASE + path, {
+                method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { 'Authorization': 'Bearer ' + token } : {})
+                },
+                body: body ? JSON.stringify(body) : undefined
+            });
+            let data; try { data = await res.json(); } catch { data = {}; }
+            if (!res.ok) throw new Error(data.error || 'Request failed');
+            return data;
+        }
+
+
+
+        async function loadRecords() {
+            const recordsContainer = document.getElementById('recentRecords');
+            try {
+                const resp = await api('/health-records'); // backend returns {source,data}
+                const list = resp.data || [];
+                if (!list.length) {
+                    recordsContainer.innerHTML = '<div class="text-center text-muted">No records found.</div>';
+                    return;
+                }
+                const subset = list.slice(0,4);
+                const html = subset.map(record => `
+                    <div class="health-record-item">
+                        <div class="d-flex justify-content-between">
+                            <h6>Record #${record.recordId || record.id || ''}</h6>
+                            <span class="badge bg-success">${record.status || 'Active'}</span>
+                        </div>
+                        <p class="mb-1">${record.diagnosis || record.notes || record.description || ''}</p>
+                        <small class="text-muted">${record.recordDate ? new Date(record.recordDate).toLocaleDateString() : ''}</small>
+                    </div>`).join('') + `
+                    <div class="text-center mt-4">
+                        <button class="btn btn-outline-primary" id="viewAllRecordsBtn">
+                            <i class="fas fa-history me-1"></i> View All Records
+                        </button>
+                        <div class="small text-muted mt-2">Source: ${resp.source}</div>
+                    </div>`;
+                recordsContainer.innerHTML = html;
+            } catch (e) {
+                recordsContainer.innerHTML = '<div class="text-danger text-center">Failed to load records.</div>';
+            }
+        }
+        loadRecords();
+
+        // 2. Load Reminders
+    async function loadReminders() {
+            const remindersContainer = document.querySelector('.card-body');
+            try {
+        const resp = await api('/reminders');
+        const reminders = resp.data || [];
+                let html = '';
+                if (reminders.length === 0) {
+                    html = '<div class="text-center text-muted">No reminders found.</div>';
+                } else {
+                    reminders.forEach(reminder => {
+                        html += `
+                        <div class="reminder-card">
+                            <h6><i class="fas ${reminder.icon || 'fa-bell'} text-primary me-2"></i> ${reminder.type}</h6>
+                            <p class="mb-1">${reminder.text}</p>
+                            <small class="text-muted">${reminder.time}</small>
+                        </div>
+                        `;
+                    });
+                }
+                html += `<button class="btn btn-outline-primary w-100 mt-2">
+                            <i class="fas fa-plus me-1"></i> Add Reminder
+                        </button>`;
+                // Find the correct reminders card-body
+                document.querySelectorAll('.card-header').forEach((header, idx) => {
+                    if(header.textContent.includes('Reminders')) {
+                        header.parentElement.querySelector('.card-body').innerHTML = html;
+                    }
+                });
+            } catch (err) {
+                document.querySelectorAll('.card-header').forEach((header, idx) => {
+                    if(header.textContent.includes('Reminders')) {
+                        header.parentElement.querySelector('.card-body').innerHTML = '<div class="text-danger text-center">Failed to load reminders.</div>';
+                    }
+                });
+            }
+        }
+        loadReminders();
+
+        // 3. Load Health Categories
+    async function loadCategories() {
+            // Example endpoint: /api/categories
+            try {
+        const resp = await api('/categories');
+        const categories = resp.data || [];
+                const categoryCards = document.querySelectorAll('.row.mb-5 .card.text-center');
+                categories.forEach((cat, idx) => {
+                    if(categoryCards[idx]) {
+                        categoryCards[idx].querySelector('i').className = `fas ${cat.icon} feature-icon`;
+                        categoryCards[idx].querySelector('h5').textContent = cat.name;
+                        categoryCards[idx].querySelector('p').textContent = cat.status;
+                        categoryCards[idx].querySelector('button').textContent = cat.action;
+                    }
+                });
+            } catch (err) {
+                // Optionally show error
+            }
+        }
+        loadCategories();
+
+        // 4. Load Access Control
+    async function loadAccessControl() {
+            // Example endpoint: /api/access
+            try {
+        const resp = await api('/access');
+        const accessList = resp.data || [];
+                const accessContainer = document.querySelectorAll('.card-header');
+                accessContainer.forEach(header => {
+                    if(header.textContent.includes('Access Control')) {
+                        const cardBody = header.parentElement.querySelector('.card-body');
+                        let html = `<p class="mb-4">Manage who can view your health records. You have full control over your data privacy.</p>`;
+                        accessList.forEach(person => {
+                            html += `
+                            <div class="consent-toggle">
+                                <div>
+                                    <h6 class="mb-0">${person.name}</h6>
+                                    <small class="text-muted">${person.role}</small>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="${person.id}" ${person.access ? 'checked' : ''}>
+                                    <label class="form-check-label" for="${person.id}">${person.accessLabel}</label>
+                                </div>
+                            </div>
+                            `;
+                        });
+                        html += `<button class="btn btn-outline-primary mt-3">
+                                    <i class="fas fa-plus me-1"></i> Add New Contact
+                                </button>`;
+                        cardBody.innerHTML = html;
+                    }
+                });
+            } catch (err) {
+                // Optionally show error
+            }
+        }
+        loadAccessControl();
+
+        // 5. Add new record
+        document.getElementById('saveRecordBtn').addEventListener('click', async function() {
+            const diagnosis = document.getElementById('recordType').value;
+            const description = document.getElementById('recordDescription').value;
+            const date = document.getElementById('recordDate').value;
+            const status = document.getElementById('recordStatus').value;
+            const notes = document.getElementById('recordNotes').value;
+
+            if (!diagnosis || !description || !date || !status) {
+                alert('Please fill all required fields.');
+                return;
+            }
+            const userData = JSON.parse(localStorage.getItem('userData')||'{}');
+            const payload = { diagnosis, notes: description + ' ' + notes, user: userData.username || userData.userId || 'unknown' };
+            try {
+                await api('/records', 'POST', payload);
+                const modal = bootstrap.Modal.getInstance(document.getElementById('addRecordModal'));
+                modal.hide();
+                document.getElementById('addRecordForm').reset();
+                loadRecords();
+            } catch (e) {
+                alert('Failed: ' + e.message);
+            }
+        });
+        
+        // 6. Logout function
+        function Logout() {
+            localStorage.removeItem('userData');
+            localStorage.removeItem('authToken');
+            window.location.href = 'page.html';
+        }
+        window.Logout = Logout; // Expose to global scope for inline onclick
+        // --- Backend Integration Ends Here ---
+    });
+</script>
+<!-- ...existing code... -->
+</body>
+</html>

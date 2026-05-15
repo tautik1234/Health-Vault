@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HealthVault - Login / Register</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet" />
+    <style>
+      body {
+        background-image: url('https://media.istockphoto.com/id/2099370050/vector/health-care-and-abstract-geometric-medical-background-with-icons-concept-and-idea-for.jpg?s=612x612&w=0&k=20&c=1DtMRN0keWpygxoo7IvrHUnipxqsRkSpKpg0wKLj75M=');
+        background-size: cover;
+        background-position: center;
+        font-family: 'Segoe UI', sans-serif;
+      }
+
+      .card {
+        margin-top: 60px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      }
+      .nav-tabs .nav-link.active {
+        background-color: #2c6bac !important;
+        color: #fff !important;
+        border-radius: 8px;
+      }
+      .btn-primary {
+        background-color: #2c6bac;
+        border: none;
+      }
+      .btn-primary:hover {
+        background-color: #1a4c7e;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <div class="card p-4">
+            <div id="errorBox" class="alert alert-danger d-none" role="alert" style="white-space:pre-line"></div>
+            <ul class="nav nav-tabs mb-3" id="authTab" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button
+                  class="nav-link active"
+                  id="login-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#login"
+                  type="button">
+                  Login
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button
+                  class="nav-link"
+                  id="register-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#register"
+                  type="button">
+                  Register
+                </button>
+              </li>
+            </ul>
+
+            <div class="tab-content">
+              <!-- Login Tab -->
+              <div class="tab-pane fade show active" id="login">
+                <h4 class="mb-3">Login</h4>
+                <form id="loginForm">
+                  <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="loginUsername"
+                      required />
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="loginPassword"
+                      required />
+                  </div>
+                  <button type="submit" class="btn btn-primary w-100">
+                    Login
+                  </button>
+                </form>
+              </div>
+
+              <!-- Register Tab -->
+              <div class="tab-pane fade" id="register">
+                <h4 class="mb-3">Register</h4>
+                <form id="registerForm">
+                  <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="regUsername"
+                      required />
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="regPassword"
+                      required />
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">BPM</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="regBpm"
+                      placeholder="e.g. 72" />
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Blood Pressure</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="regBp"
+                      placeholder="e.g. 120/80" />
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">BMI</label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      class="form-control"
+                      id="regBmi"
+                      placeholder="e.g. 22.5" />
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Weight (kg)</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="regWeight"
+                      placeholder="e.g. 70" />
+                  </div>
+                  <button type="submit" class="btn btn-success w-100">
+                    Register
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      const API_BASE = 'http://localhost:5000';
+
+      async function api(path, method = 'GET', body, auth = true) {
+        const token = localStorage.getItem('authToken');
+        const res = await fetch(API_BASE + path, {
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+            ...(auth && token ? { Authorization: 'Bearer ' + token } : {}),
+          },
+          body: body ? JSON.stringify(body) : undefined,
+        });
+        let data;
+        try {
+          data = await res.json();
+        } catch {
+          data = {};
+        }
+        if (!res.ok) throw new Error(data.error || 'Request failed');
+        return data;
+      }
+
+      const errorBox = document.getElementById('errorBox');
+      function showError(msg) {
+        if (!msg) { errorBox.classList.add('d-none'); errorBox.textContent=''; return; }
+        errorBox.textContent = msg;
+        errorBox.classList.remove('d-none');
+      }
+      function clearErrorLater(ms=5000){ setTimeout(()=>showError(''), ms); }
+
+      document.getElementById('loginForm').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const emailOrUser = document
+            .getElementById('loginUsername')
+            .value.trim();
+          const password = document.getElementById('loginPassword').value;
+          try {
+            showError('');
+            // Backend expects email; allow user to type username by mapping to mock domain if @ missing
+            const email = emailOrUser.includes('@')
+              ? emailOrUser
+              : emailOrUser + '@example.com';
+            const resp = await api(
+              '/login',
+              'POST',
+              { email, password },
+              false
+            );
+            localStorage.setItem('authToken', resp.token || 'mockToken');
+            // store minimal profile + backend userId
+            const existing = JSON.parse(
+              localStorage.getItem('userData') || '{}'
+            );
+            existing.username = emailOrUser;
+            existing.userId = resp.userId || existing.userId;
+            localStorage.setItem('userData', JSON.stringify(existing));
+            window.location.href = 'HealthVault.html';
+          } catch (err) {
+            showError('Login failed: ' + err.message);
+            clearErrorLater();
+          }
+        });
+
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const payload = {
+          username: document.getElementById('regUsername').value.trim(),
+          email: document.getElementById('regUsername').value.trim() + '@example.com',
+          password: document.getElementById('regPassword').value,
+          stats: {
+            bpm: document.getElementById('regBpm').value,
+            bp: document.getElementById('regBp').value,
+            bmi: document.getElementById('regBmi').value,
+            weight: document.getElementById('regWeight').value
+          }
+        };
+        try {
+      showError('');
+          const resp = await api('/register', 'POST', payload, false);
+          localStorage.setItem('authToken', resp.token || 'mockToken');
+          localStorage.setItem('userData', JSON.stringify({ username: payload.username, ...payload.stats }));
+          window.location.href = 'HealthVault.html';
+        } catch (err) {
+      showError('Register failed: ' + err.message);
+      clearErrorLater();
+        }
+      });
+    </script>
+  </body>
+</html>
